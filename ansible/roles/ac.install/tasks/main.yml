@@ -1,0 +1,112 @@
+---
+# tasks file for ac.install
+- name: Verificar que los prerequisitos se encuentren instalados
+  yum:
+    name:
+      - bind-utils
+      - rsyslog
+      - rsyslog-gnutls
+      - ncurses-libs
+      - ncurses-libs.i686
+      - unzip
+      - ntp
+      - net-tools
+      - zip
+      - net-snmp
+    state: latest
+    update_cache: true
+  become: yes
+
+- name: Crear un directorio de instalación en remoto
+  file:
+    path: /installer/NAM
+    state: directory
+  become: yes
+
+- name: Extraer instalador (local) en remoto
+  become: yes
+  unarchive:
+    src: ../../../installers/am-45-access-manager-lin64.tar.gz
+    dest: /installer/NAM
+
+# debe coincidir con la IP de Vagrantfile
+- name: Agregar IP  en /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: 10.0.1.4   ac.lab
+    owner: root
+    group: root
+    mode: "0644"
+  become: yes
+
+# engañar al instalador para que no se queje por la versión
+- name: Agregar release en /etc/redhat-release
+  lineinfile:
+    path: /etc/redhat-release
+    state: present
+    line: Red Hat Enterprise Linux Server release 7.5 (Maipo)
+    insertbefore: CentOS Linux release 7\.(.*)
+    owner: root
+    group: root
+    mode: "0644"
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Registrar directorio de instalación en una variable
+  shell: ls -d /installer/NAM/novell-access-manager-*
+  register: dir_name
+  become: yes
+
+# Es necesario para RHEL según
+# https://support.microfocus.com/kb/doc.php?id=7017418
+- name: Comentar  chequeo NTP en script de preinstalación
+  copy:
+    src: files/pre_install.sh
+    dest: "{{ dir_name.stdout }}/scripts/pre_install.sh"
+    owner: root
+    group: root
+    mode: "0755"
+    backup: yes
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Quitar chequeo ntp - nam_rhel7_functions
+  copy:
+    src: files/nam_rhel7_functions.sh
+    dest: "{{ dir_name.stdout }}/scripts/nam_rhel7_functions.sh"
+    owner: root
+    group: root
+    mode: "0755"
+    backup: yes
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Para que funcione es necesario que pexpect se encuentre en el remoto
+# sudo pip -E pexpect
+# - name: Ejecutar instalador
+#   args:
+#     chdir: "{{ dir_name.stdout }}"
+#   expect:
+#     command: ./install.sh
+#     echo: yes
+#     responses:
+#       (.*)Would you like to continue(.*): "y"
+#       (.*)Select installation(.*): "1"
+#       (.*)PRESS ENTER TO CONTINUE(.*): "\n"
+#       (.*)DO YOU ACCEPT THE TERMS OF THIS LICENSE AGREEMENT(.*): "y"
+#       (.*)Would you like to continue with the installation(.*): "y"
+#       (.*)Is this the primary administration server in a failover group(.*): "y"
+#       (.*)Enter the Access Manager Administration user ID(.*): "admin"
+#       (.*)Enter the Access Manager Administration password(.*): "Novell.123"
+#       (.*)Re-enter the password for verification(.*): "Novell.123"
+
+- name: run the install script
+  shell: printf "y\n1\n\n\n\n\n\n\n\ny\ny\ny\n10.0.1.4\nadmin\nNovell.123\nNovell.123\n" | ./install.sh
+  become: yes
+  args:
+    chdir: "{{ dir_name.stdout }}"
+  register: run_installation
+
+- debug:
+    var: run_installation

@@ -1,0 +1,5 @@
+---
+# tasks file for system.reboot
+
+- name: Rebooting the system
+  reboot:

@@ -1,0 +1,33 @@
+---
+# tasks file for ag.install
+- name: make a new directory for downloading the installer
+  command: sudo mkdir -p /installer/NAM
+  register: make_directory
+
+- name: downloading new installer
+  command: sudo wget http://100.00.00.001/builds/data/"{{ build_version }}"/idpbuilds/linags.tar.gz
+  args:
+    chdir: /installer/NAM/
+  register: download_installer
+
+- name: untar the downloaded builds
+  command: sudo tar -zxvf linags.tar.gz
+  args:
+     chdir: /installer/NAM/
+  register: extract_installer
+
+- name: removing the installer tar file
+  shell: sudo rm -r /installer/NAM/linags.tar.gz
+
+- shell: sudo ls -d /installer/NAM/novell* | head -1
+  register: dir_name
+
+- name: run the install script
+  shell: sudo printf "Y\n\n\n\n\n\n\n\nY\nY\nn\n{{ item }}\nadmin\nnovell\nnovell\n\n" |sudo ./ag_install.sh
+  with_inventory_hostnames: AC
+  args:
+    chdir: "{{ dir_name.stdout }}"
+  register: run_installation
+
+- debug:
+    var: run_installation

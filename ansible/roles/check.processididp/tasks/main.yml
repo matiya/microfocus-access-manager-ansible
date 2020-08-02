@@ -1,0 +1,26 @@
+---
+# tasks file for check.processididp
+
+- name: initial process id
+#  shell: ps -ef | grep -i ac | grep novlwww | cut -c10-15
+  shell:  ps -ef  | grep -i idp | grep novlwww | awk -F" " '{print $2}'
+  register: initialpid
+
+- debug:
+    var: initialpid.stdout_lines[0]
+
+- name: restart idp service
+  shell: /etc/init.d/novell-idp restart
+
+- name: process id after service restart
+#  shell: ps -ef | grep -i ac | grep novlwww | cut -c10-15
+  shell:  ps -ef  | grep -i idp | grep novlwww | awk -F" " '{print $2}'
+  register: postrestartpid
+
+- debug:
+    var: postrestartpid.stdout_lines[0]
+
+- name: compare the two process ids
+  fail: msg="the process id are same"
+  when: initialpid.stdout_lines[0] == postrestartpid.stdout_lines[0]
+

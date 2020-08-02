@@ -1,0 +1,10 @@
+---
+- hosts: all
+  tasks:
+    - name: ping
+      ping:
+      # notify:
+      #   - restart ntpd
+  handlers:
+    - name: restart ntpd
+      service: name=ntpd state=restarted

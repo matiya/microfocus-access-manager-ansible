@@ -1,0 +1,32 @@
+---
+# tasks file for ac.install
+- name: make a new directory for downloading the installer
+  command: sudo mkdir -p /installer/NAM
+  register: make_directory
+
+- name: downloading new installer
+  command: sudo wget http://100.00.00.001/builds/data/"{{ build_version }}"/idpbuilds/linuxac.tar.gz
+  args:
+    chdir: /installer/NAM/
+  register: download_installer
+
+- name: untar the downloaded builds
+  command: sudo tar -zxvf linuxac.tar.gz
+  args:
+     chdir: /installer/NAM/
+  register: extract_installer
+
+- name: removing the installer tar file
+  shell: sudo rm -r /installer/NAM/linuxac.tar.gz
+
+- shell: sudo ls -d /installer/NAM/novell-access-manager-*
+  register: dir_name
+
+- name: run the install script
+  shell: sudo printf "Y\n1\n\n\n\n\n\n\n\nY\nY\nY\n\nadmin\nnovell\nnovell\n" | ./install.sh
+  args:
+    chdir: "{{ dir_name.stdout }}"
+  register: run_installation
+
+- debug:
+    var: run_installation

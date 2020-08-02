@@ -1,0 +1,32 @@
+---
+# tasks file for check.commands
+#- name: restart the ststem
+#  shell: reboot
+
+- name: check for sudo
+  shell: sudo --version | head | grep -c error
+  register: sudo_output
+  ignore_errors: true
+
+- name: verify sudo_output
+  fail: msg="problem with sudo"
+  when: sudo_output.stdout != "0"
+
+- name: check for yum
+  shell: yum --version | head | grep -c error
+  register: yum_output
+  ignore_errors: true
+
+- name: verify zypper_output
+  fail: msg="problem with yum"
+  when: yum_output.stdout != "0"
+
+## for getting all the versions in a file
+
+- name: version file
+  shell: rm -f /versioninfo.txt
+
+- shell: sudo --version | grep -i "sudo version" >> /versioninfo.txt
+- shell: yum --version | head -n 1 >> /versioninfo.txt
+- shell: df -h >> /versioninfo.txt
+- shell: cat /etc/os-release >> /versioninfo.txt

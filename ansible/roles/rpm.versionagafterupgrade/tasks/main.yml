@@ -1,0 +1,18 @@
+---
+# tasks file for rpm.versionagafterupgrade
+- name: apache version check
+  shell: rpm -qa | grep nacm >> /postupgradeagrpm.txt
+  register: apache_verion
+
+- name: tomcat version check
+  shell: rpm -qa | grep netiq-tomcat >> /postupgradeagrpm.txt
+  register: tomcat_version
+
+- name: jre version check
+  shell: rpm -qa | grep netiq-jre >> /postupgradeagrpm.txt
+  register: jre_version
+
+- name: esp version check
+  shell: rpm -qa | grep nesp >> /postupgradeagrpm.txt
+  register: esp_version
+

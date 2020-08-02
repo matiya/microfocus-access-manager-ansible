@@ -1,0 +1,41 @@
+---
+- hosts: ac
+  roles:
+    - ac.install
+    - rpm.versionacafterupgrade
+- hosts: idp
+  roles:
+    - idp.install
+    - rpm.versionidpafterupgrade
+# - hosts: AG
+#   roles:
+#      - ag.install
+#      - rpm.versionagafterupgrade
+
+# #- hosts: localhost
+# #  tasks:
+# #    - pause: seconds=180
+
+# - hosts: AC
+#   roles:
+#     - check.processidac
+
+# - hosts: IDP
+#   roles:
+#     - check.processididp
+
+# - hosts: AG
+#   roles:
+#     - check.processidag
+
+# - hosts: AC,IDP,AG
+#   roles:
+#     - system.reboot
+
+# - hosts: AC,IDP,AG
+#   roles:
+#     - check.commands
+
+# - hosts: AC
+#   roles:
+#     - check.ACup

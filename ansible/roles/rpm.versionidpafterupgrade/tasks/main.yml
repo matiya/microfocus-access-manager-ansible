@@ -1,0 +1,14 @@
+---
+# tasks file for rpm.versionidpafterupgrade
+- name: nidp version check
+  shell: rpm -qa | grep nidp >> /postupgradeidprpm.txt
+  register: nidp_version
+
+- name: tomcat version check
+  shell: rpm -qa | grep netiq-tomcat >> /postupgradeidprpm.txt
+  register: tomcat_version
+
+- name: jre version check
+  shell: rpm -qa | grep netiq-jre >> /postupgradeidprpm.txt
+  register: jre_version
+
