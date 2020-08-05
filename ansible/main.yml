@@ -1,41 +1,35 @@
 ---
 - hosts: ac
   roles:
+    - all.checkPrerequisites
     - ac.install
-    - rpm.versionacafterupgrade
+    - ac.checkSoftwareVersion
+  vars_files:
+    - ../variables.yml
+
 - hosts: idp
   roles:
+    - all.checkPrerequisites
     - idp.install
-    - rpm.versionidpafterupgrade
-# - hosts: AG
-#   roles:
-#      - ag.install
-#      - rpm.versionagafterupgrade
+    - idp.checkSoftwareVersion
+  vars_files:
+    - ../variables.yml
 
-# #- hosts: localhost
-# #  tasks:
-# #    - pause: seconds=180
+- hosts: ag
+  roles:
+    - all.checkPrerequisites
+    - ag.install
+    - ag.checkSoftwareVersion
+  vars_files:
+    - ../variables.yml
 
-# - hosts: AC
-#   roles:
-#     - check.processidac
+- hosts: ac,idp,ag
+  roles:
+    - system.reboot
 
-# - hosts: IDP
-#   roles:
-#     - check.processididp
-
-# - hosts: AG
-#   roles:
-#     - check.processidag
-
-# - hosts: AC,IDP,AG
-#   roles:
-#     - system.reboot
-
-# - hosts: AC,IDP,AG
-#   roles:
-#     - check.commands
-
-# - hosts: AC
-#   roles:
-#     - check.ACup
+- hosts: ac, idp, ag
+  tags: health-check
+  roles:
+    - role: check.WebUp
+  vars_files:
+    - ../variables.yml

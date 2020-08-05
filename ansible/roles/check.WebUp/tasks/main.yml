@@ -1,0 +1,11 @@
+---
+# tasks file for check.ACup
+- name: Comprobar accesibilidad consola web AC
+  uri:
+    url: "https://{{ac_fqdn}}:8443/nps"
+    validate_certs: no
+
+- name: Comprobar accesibilidad consola IdP
+  uri:
+    url: "https://{{ids_fqdn}}:8443/nidp"
+    validate_certs: no

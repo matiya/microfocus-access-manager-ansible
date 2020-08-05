@@ -1,0 +1,20 @@
+---
+# tasks file for rpm.versionidpafterupgrade
+- name: Verificar las versiones instaladas
+  yum:
+    name:
+      - novell-nidp-server
+      - netiq-tomcat
+      - netiq-jrex
+    state: present
+  register: paquetes
+  become: yes
+
+- name: Verificar que tomcat esté escuchando
+  shell: netstat -tapun | grep 8443 | grep LISTEN | awk '{print $4}'
+  register: tomcat
+  become: yes
+
+- debug:
+    msg: "Tomcat ha iniciado y está escuchando en {{tomcat.stdout}}"
+  when: tomcat.stdout.find('8443') != -1

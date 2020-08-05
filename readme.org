@@ -1,0 +1,68 @@
+#+TITLE: Access Manager with Vagrant+Ansible
+
+* Overview
+This proyect uses [[https://en.wikipedia.org/wiki/Vagrant_(software)][Vagrant]] to instantiate three VMs (running centos 7 by default). It the uses [[https://en.wikipedia.org/wiki/Ansible_(software)][Ansible]] to provision (configure and check) the VMs with different roles in order to install a demo environment with Microfocus Access Manager 4.5.
+
+A role in Ansible parlance is a set of tasks that are executed in the remote machines. For this proyect, these are the VMs created by Vagrant.
+
+In this scenario, the roles are defined in the =ansible/main.yml= file and are executed from top to bottom.
+
+The tasks executed by the roles themselves can be found under =ansible/roles/<role-name>/tasks/main.yml= and as they are written in YAML they should be easy to read and undestand. Or so the theory goes.
+
+Broadly speaking, to install the IDP there are four roles involved:
+
++ Check prerequisites :: idp.checkPrerequisites
++ Run Installer :: idp.install
++ Reboot :: system.reboot
++ Check Status :: check.WebUp
+
+
+* Software Prerequisites
++ Ansible
++ Vagrant
++ Microfocus Access Manager Installers are not provided, they should be placed into the =ansible/installer= folder. Check
+
+* Configuration
+A number of settings can be modified such as the DNS name of the VMs, the static IP address or the username/passwords.
+
+They all can be set in the =variables.yml= file and are sourced from every other script in this proyect.
+
+The emulated HW seen by the VMs can be modified in the =Vagrantfile= file.
+
+Note that ansible is not dependant on vagrant, which means that the ansible roles could be executed  on physical or cloud servers with minimal configuration.
+
+* Running
+
+Simply run
+#+begin_src bash
+vagrant up
+#+end_src
+An the machines will be brought up. Since it has to download the whole OS, this process can take up several minutes depending on your bandwidth.
+
+To suspend/power off/reboot a machine:
+#+begin_src bash
+# power off all the machines
+vagrant halt
+# suspend all the machines
+vagrant supend
+# resume all the machines
+vagrant resume
+# reboot all the machines
+vagrant reload
+# run the provisioning (ansible roles)
+vagrant provision
+#+end_src
+
+
+* Other goodies
+Roles are tagged to provide extra functionality.
+
+This can be accomplished with the extra flag =--tags <tag_name>= to =ansible-playbook=.
+** Health  check
+Check if the web consoles can be reached:
+
+#+begin_src
+ansible-playbook -i  .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml --tags "health-check"
+#+end_src
+** NTP Check
+NAM can be a little finicky when it comes to time sincronization

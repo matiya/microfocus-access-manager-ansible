@@ -1,8 +1,17 @@
 ---
 # tasks file for idp.install
+
+- name: Enable EPEL Repository on CentOS 7
+  yum:
+    name: epel-release
+    state: latest
+  become: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: Verificar que los prerequisitos se encuentren instalados
   yum:
     name:
+      - python-pip
       - bind-utils
       - rsyslog
       - rsyslog-gnutls
@@ -17,6 +26,13 @@
     update_cache: true
   become: yes
 
+- name: Instalar pexpect
+  pip:
+    name:
+      - pexpect>3.3
+      - pip
+  become: yes
+
 - name: Crear un directorio de instalación en remoto
   file:
     path: /installer/NAM
@@ -28,6 +44,8 @@
   unarchive:
     src: ../../../installers/am-45-access-manager-lin64.tar.gz
     dest: /installer/NAM
+    creates: /installer/NAM/novell-access-manager-4.5.0.0-190
+  register: installer_path
 
 - shell: ls -d /installer/NAM/novell-access-manager-*
   register: dir_name
@@ -62,7 +80,10 @@
   lineinfile:
     path: /etc/hosts
     state: present
-    line: 10.0.1.5   idp.lab
+    line: |
+      {{ids_ip_address}}     {{ids_fqdn}}
+      {{ag_ip_address}}     {{ag_fqdn}}
+      {{ac_ip_address}}     {{ac_fqdn}}
     owner: root
     group: root
     mode: "0644"
@@ -86,13 +107,24 @@
   register: dir_name
   become: yes
 
-- name: run the install script
-  #  shell:  printf "Y\n2\nY\n\n\n\n\n\n\n\nY\nY\nY{{ item }}\nadmin\nnovell\nnovell\n\nn\n" | ./install.sh
-  shell: printf "Y\n2\nY\n\n\n\n\n\n\n\nY\nY\n{{ item }}\nadmin\nnovell\nnovell\n\nn\n" | ./install.sh
-  with_inventory_hostnames: ac
+- name: Ejecutar instalador
   args:
     chdir: "{{ dir_name.stdout }}"
-  register: run_installation
   become: yes
-- debug:
-    var: run_installation
+  expect:
+    creates: /opt/novell/nam/idp/bin/novell-idp
+    command: ./install.sh
+    echo: yes
+    timeout: 1500
+    responses:
+      (.*)Would you like to continue(.*): "y"
+      (.*)Select installation(.*): "2"
+      (.*)PRESS ENTER TO CONTINUE(.*): "\n"
+      (.*)DO YOU ACCEPT THE TERMS OF THIS LICENSE AGREEMENT(.*): "y"
+      (.*)Would you like to continue with the installation(.*): "y"
+      \[\](.*): "{{ac_ip_address}}"
+      (.*)Enter the Access Manager Administration user ID(.*): "{{ids_admin_user}}"
+      (.*)Enter the Access Manager Administration password(.*): "{{ids_admin_password}}"
+      \[\d+\.\d+\.\d+.\d+\](.*): "{{ids_ip_address}}"
+      (.*)Re-enter the password for verification(.*): "{{ids_admin_password}}"
+      (.*)Is local NAT available for the Identity Server(.*): "n"

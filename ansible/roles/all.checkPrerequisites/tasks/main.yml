@@ -1,0 +1,75 @@
+---
+# Tareas que son comunes a todos
+- name: Enable EPEL Repository on CentOS 7
+  yum:
+    name: epel-release
+    state: latest
+  become: True
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Verificar que los prerequisitos comunes se encuentren instalados
+  yum:
+    name:
+      - bind-utils
+      - python-pip
+      - rsyslog
+      - rsyslog-gnutls
+      - ncurses-libs
+      - ncurses-libs.i686
+      - unzip
+      - ntp
+      - net-tools
+      - zip
+      - net-snmp
+      - glibc.i686
+    state: latest
+    update_cache: true
+  become: yes
+
+- name: Instalar pexpect
+  pip:
+    name:
+      - pexpect>3.3
+      - pip
+  become: yes
+
+- name: Crear un directorio de instalación en remoto
+  file:
+    path: /installer/NAM
+    state: directory
+  become: yes
+
+- name: Agregar IP  en /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    state: present
+    line: |
+      {{ids_ip_address}}     {{ids_fqdn}}
+      {{ag_ip_address}}     {{ag_fqdn}}
+      {{ac_ip_address}}     {{ac_fqdn}}
+    owner: root
+    group: root
+    mode: "0644"
+  become: yes
+
+# engañar al instalador para que no se queje por la versión
+- name: Agregar release en /etc/redhat-release
+  lineinfile:
+    path: /etc/redhat-release
+    state: present
+    line: Red Hat Enterprise Linux Server release 7.5 (Maipo)
+    insertbefore: CentOS Linux release 7\.(.*)
+    owner: root
+    group: root
+    mode: "0644"
+  become: yes
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Habilitar NTP y verificar que este corriendo
+  service: name=ntpd state=started enabled=yes
+  become: yes
+
+- name: Set timezone to America/Santiago
+  timezone:
+    name: America/Santiago
+  become: yes

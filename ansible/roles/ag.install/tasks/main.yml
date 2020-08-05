@@ -1,33 +1,52 @@
 ---
 # tasks file for ag.install
-- name: make a new directory for downloading the installer
-  command: sudo mkdir -p /installer/NAM
-  register: make_directory
+- name: Verificar que los prerequisitos se encuentren instalados
+  yum:
+    name:
+      - apr
+      - apr-util
+      - unixODBC
+      - libesmtp
+      - pcre
+      - patch
+      - psmisc
+      - libtool-ltdl
+      - nss-softokn-freebl.i686
+      - ncurses-libs
+      - ncurses-libs.i686
+    state: latest
+  become: yes
 
-- name: downloading new installer
-  command: sudo wget http://100.00.00.001/builds/data/"{{ build_version }}"/idpbuilds/linags.tar.gz
-  args:
-    chdir: /installer/NAM/
-  register: download_installer
+- name: Extraer instalador (local) en remoto
+  become: yes
+  unarchive:
+    src: ../../../installers/am-45-access-gw-lin64.tar.gz
+    dest: /installer/NAM
+    creates: /installer/NAM/novell-access-gateway-4.5.0.0-190
+  register: installer_path
 
-- name: untar the downloaded builds
-  command: sudo tar -zxvf linags.tar.gz
-  args:
-     chdir: /installer/NAM/
-  register: extract_installer
-
-- name: removing the installer tar file
-  shell: sudo rm -r /installer/NAM/linags.tar.gz
-
-- shell: sudo ls -d /installer/NAM/novell* | head -1
+- shell: ls -d /installer/NAM/novell* | head -1
   register: dir_name
+  become: yes
 
-- name: run the install script
-  shell: sudo printf "Y\n\n\n\n\n\n\n\nY\nY\nn\n{{ item }}\nadmin\nnovell\nnovell\n\n" |sudo ./ag_install.sh
-  with_inventory_hostnames: AC
+- name: Ejecutar instalador
   args:
     chdir: "{{ dir_name.stdout }}"
-  register: run_installation
-
-- debug:
-    var: run_installation
+  become: yes
+  expect:
+    creates: /opt/novell/nam/idp/bin/novell-idp
+    command: ./ag_install.sh
+    echo: yes
+    timeout: 1500
+    responses:
+      (.*)Would you like to continue(.*): "y"
+      (.*)Select installation(.*): "2"
+      (.*)PRESS ENTER TO CONTINUE(.*): "\n"
+      (.*)DO YOU ACCEPT THE TERMS OF THIS LICENSE AGREEMENT(.*): "y"
+      (.*)Would you like to continue with the installation(.*): "y"
+      \[\](.*): "{{ac_ip_address}}"
+      (.*)Enter the Access Manager Administration user ID(.*): "{{ids_admin_user}}"
+      (.*)Enter the Access Manager Administration password(.*): "{{ids_admin_password}}"
+      \[\d+\.\d+\.\d+.\d+\](.*): "{{ag_ip_address}}"
+      (.*)Re-enter the password for verification(.*): "{{ids_admin_password}}"
+      (.*)Is local NAT available for the Access Gateway(.*): "n"
