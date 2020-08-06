@@ -6,7 +6,7 @@ ac_admin_password: Password.123
 
 # Identity Server vars
 ids_ip_address: "10.0.1.5"
-ids_fqdn: ids.lab
+ids_fqdn: idp.lab
 ids_admin_user: admin
 ids_admin_password: Password.123
 

@@ -10,21 +10,21 @@ settings = YAML.load_file './variables.yml'
 
 boxes = [
     {
-        :name     => "ac2",
+        :name     => "ac",
         :hostname => settings['ac_fqdn'],
         :memory   => 2048,
         :cpus     => 1,
         :network  => settings['ac_ip_address']
     },
     {
-        :name     => "idp2",
+        :name     => "idp",
         :hostname => settings['ids_fqdn'],
         :memory   => 2048,
         :cpus     => 1,
         :network  => settings['ids_ip_address']
     },
     {
-        :name     => "ag2",
+        :name     => "ag",
         :hostname => settings['ag_fqdn'],
         :memory   => 2048,
         :cpus     => 1,
@@ -59,7 +59,7 @@ Vagrant.configure("2") do |config|
         # PROVISIONING WITH ANSIBLE
         # ------------------------------------------------------------------------
         box_config.vm.provision "ansible" do |ansible|
-          ansible.inventory_path = "ansible/hosts.yml"
+          # ansible.inventory_path = "ansible/hosts.yml"
           ansible.limit = "all"
           ansible.playbook = "ansible/main.yml"
           ansible.raw_arguments = ["--private-key=~/.vagrant.d/insecure_private_key"]

@@ -1,11 +1,11 @@
 ---
 # Tareas que son comunes a todos
-- name: Enable EPEL Repository on CentOS 7
+- name: Habilitar repositorio EPEL
   yum:
     name: epel-release
     state: latest
   become: True
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'
 
 - name: Verificar que los prerequisitos comunes se encuentren instalados
   yum:

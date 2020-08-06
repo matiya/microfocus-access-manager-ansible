@@ -1,5 +1,8 @@
 #+TITLE: Access Manager with Vagrant+Ansible
 
+* What is this?
+
+Now you can install Access Manager (Administration Console, Identity Server and Access Gateway) with only [[Running][three commands]]
 * Overview
 This project uses [[https://en.wikipedia.org/wiki/Vagrant_(software)][Vagrant]] to instantiate three VMs (running centos 7 by default). It the uses [[https://en.wikipedia.org/wiki/Ansible_(software)][Ansible]] to provision (configure and check) the VMs with different roles in order to install a demo environment with Microfocus Access Manager 4.5.
 
@@ -17,6 +20,7 @@ Broadly speaking, to install the IDP there are four roles involved:
 + Check Status :: check.WebUp
 
 * Software Prerequisites
++ This repo
 + Ansible
 + Vagrant
 + Virtualbox
@@ -33,7 +37,7 @@ Note that ansible is not dependant on vagrant, which means that the ansible role
 
 * Running
 
-Simply run
+Simply run at the root of the repo:
 #+begin_src bash
 vagrant up ac # create Access Console VM and provision
 vagrant up idp # create Identity Server VM and provision
@@ -69,11 +73,18 @@ If the hosts are elsewere, use the host file in =ansible/hosts=. Modify it accor
 ** Health  check
 Check if the web consoles can be reached:
 
-#+begin_src
-ansible-playbook -i  .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml --tags "health-check"
+#+begin_src bash
+# if using vagrant
+ansible-playbook -i  .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml ansible/aux/check_webConsoleIsUp.yml
+# if not using vagrant
+ansible-playbook -i  ansible/hosts.yml ansible/aux/check_webConsoleIsUp.yml
 #+end_src
 ** NTP Check
 NAM can be a little finicky when it comes to time sincronization.
-#+begin_src
+#+begin_src bash
 ansible-playbook -i  .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml --tags "health-check"
+# if not using vagrant
+ansible-playbook -i  ansible/hosts.yml ansible/aux/ntp_check.yml
+# if not using
+ansible-playbook -i  ansible/hosts.yml --tags "health-check"
 #+end_src
