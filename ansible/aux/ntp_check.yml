@@ -1,0 +1,24 @@
+---
+- hosts: all
+  tags: health-check
+  become: yes
+  vars_files:
+    - ../../variables.yml
+  tasks:
+    - name: Verificar que NTP se encuentre instalador
+      yum:
+        name: ntp
+    - name: Habilitar NTP y verificar que este corriendo
+      service:
+        state: started
+        enabled: yes
+        name: ntpd
+    - name: "Set timezone to {{timezone}}"
+      timezone:
+        name: "{{timezone}}"
+    - name: Imprimir la hora
+      shell: "date"
+      register: date
+    - name: Imprimir la hora
+      debug:
+        msg: "Hora en el servidor: {{date.stdout}}"

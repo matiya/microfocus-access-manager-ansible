@@ -1,0 +1,21 @@
+- hosts: idp1
+  tags: health-check
+  vars_files:
+    - ../../variables.yml
+  become: yes
+  tasks:
+    - name: Comprobar accesibilidad consola IdP
+      uri:
+        url: "https://{{ids_fqdn}}:8443/nidp"
+        validate_certs: no
+
+- hosts: ac1
+  tags: health-check
+  vars_files:
+    - ../../variables.yml
+  become: yes
+  tasks:
+    - name: Comprobar accesibilidad consola AC
+      uri:
+        url: "https://{{ac_fqdn}}:8443/nidp"
+        validate_certs: no
