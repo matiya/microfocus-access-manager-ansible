@@ -1,0 +1,5 @@
+---
+- name: Comprobar accesibilidad consola web AC
+  uri:
+    url: "https://{{ac_fqdn}}:8443/nps"
+    validate_certs: no

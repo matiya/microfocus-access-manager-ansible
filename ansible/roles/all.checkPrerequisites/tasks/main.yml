@@ -69,7 +69,7 @@
   service: name=ntpd state=started enabled=yes
   become: yes
 
-- name: Set timezone to America/Santiago
+- name: "Set timezone to {{timezone}}"
   timezone:
-    name: America/Santiago
+    name: "{{timezone}}"
   become: yes

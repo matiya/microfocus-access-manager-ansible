@@ -42,10 +42,9 @@
 - name: Extraer instalador (local) en remoto
   become: yes
   unarchive:
-    src: ../../../installers/am-45-access-manager-lin64.tar.gz
+    src: "../../../installers/{{ac_idp_installer}}"
     dest: /installer/NAM
     creates: /installer/NAM/novell-access-manager-4.5.0.0-190
-  register: installer_path
 
 - shell: ls -d /installer/NAM/novell-access-manager-*
   register: dir_name

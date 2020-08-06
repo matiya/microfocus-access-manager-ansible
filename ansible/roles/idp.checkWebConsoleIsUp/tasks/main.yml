@@ -1,0 +1,5 @@
+---
+- name: Comprobar accesibilidad consola IdP
+  uri:
+    url: "https://{{ids_fqdn}}:8443/nidp"
+    validate_certs: no

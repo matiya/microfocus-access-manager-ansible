@@ -21,18 +21,15 @@
 - name: Extraer instalador (local) en remoto
   become: yes
   unarchive:
-    src: ../../../installers/am-45-access-manager-lin64.tar.gz
+    src: ../../../installers/{{ac_idp_installer}}
     dest: /installer/NAM
     creates: /installer/NAM/novell-access-manager-4.5.0.0-190
-  register: installer_path
 
 - name: Registrar directorio de instalación en una variable
   shell: ls -d /installer/NAM/novell-access-manager-*
   register: dir_name
   become: yes
 
-- debug:
-    var: installer_path.files[0]
 # Es necesario para RHEL según
 # https://support.microfocus.com/kb/doc.php?id=7017418
 - name: Comentar  chequeo NTP en script de preinstalación
@@ -58,7 +55,6 @@
   when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
 # Para que funcione es necesario que pexpect se encuentre en el remoto
-# sudo pip -E pexpect
 - name: Ejecutar instalador
   args:
     chdir: "{{ dir_name.stdout }}"
@@ -67,6 +63,7 @@
     command: ./install.sh
     echo: yes
     timeout: 1500
+    creates: /opt/novell/nam/adminconsole/bin/novell-ac
     responses:
       (.*)Would you like to continue(.*): "y"
       (.*)Select installation(.*): "1"

@@ -20,7 +20,7 @@
 - name: Extraer instalador (local) en remoto
   become: yes
   unarchive:
-    src: ../../../installers/am-45-access-gw-lin64.tar.gz
+    src: ../../../installers/{{ag_installer}}
     dest: /installer/NAM
     creates: /installer/NAM/novell-access-gateway-4.5.0.0-190
   register: installer_path
