@@ -4,6 +4,7 @@
     - all.checkPrerequisites
     - ac.install
     - ac.checkSoftwareVersion
+    - ac.checkWebConsoleIsUp
   vars_files:
     - ../variables.yml
 
@@ -12,6 +13,7 @@
     - all.checkPrerequisites
     - idp.install
     - idp.checkSoftwareVersion
+    - idp.checkWebConsoleIsUp
   vars_files:
     - ../variables.yml
 
@@ -20,16 +22,5 @@
     - all.checkPrerequisites
     - ag.install
     - ag.checkSoftwareVersion
-  vars_files:
-    - ../variables.yml
-
-- hosts: ac,idp,ag
-  roles:
-    - system.reboot
-
-- hosts: ac, idp, ag
-  tags: health-check
-  roles:
-    - role: check.WebUp
   vars_files:
     - ../variables.yml

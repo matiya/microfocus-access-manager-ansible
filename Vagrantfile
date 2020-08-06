@@ -7,45 +7,64 @@ require 'yaml'
 settings = YAML.load_file './variables.yml'
 
 
+
+boxes = [
+    {
+        :name     => "ac2",
+        :hostname => settings['ac_fqdn'],
+        :memory   => 2048,
+        :cpus     => 1,
+        :network  => settings['ac_ip_address']
+    },
+    {
+        :name     => "idp2",
+        :hostname => settings['ids_fqdn'],
+        :memory   => 2048,
+        :cpus     => 1,
+        :network  => settings['ids_ip_address']
+    },
+    {
+        :name     => "ag2",
+        :hostname => settings['ag_fqdn'],
+        :memory   => 2048,
+        :cpus     => 1,
+        :network  => settings['ag_ip_address']
+    },
+
+]
+
 Vagrant.configure("2") do |config|
 
+  # Base Vagrant VM configuration
   config.vm.box = "centos/7"
-  # edir 9.1 necesita redhat 7.5
-  #config.vm.box_version = "1809.01"
-  # evito insertar un key por machine
-  # en cambio utiliza un key global
-  config.ssh.insert_key=false
-  config.vm.synced_folder ".","/vagrant", disabled:true
-
-  config.vm.provider "virtualbox" do |vb|
-    #vb.gui = true
-    vb.memory = "2048"
-    vb.linked_clone =true
+  config.ssh.insert_key = false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.provider :virtualbox do |v|
+    v.linked_clone = true
   end
 
-  # app 1 config
-  config.vm.define "ac" do |app|
-    app.vm.hostname = settings['ac_fqdn']
-    app.vm.network :private_network, ip: settings['ac_ip_address'], nic_type: "82540EM"
-  end
-  config.vm.define "idp" do |app|
-    app.vm.hostname = settings['ids_fqdn']
-    app.vm.network :private_network, ip: settings['ids_ip_address'], nic_type: "82540EM"
-  end
-  config.vm.define "ag" do |app|
-    app.vm.hostname = settings['ag_fqdn']
-    app.vm.network :private_network, ip: settings['ag_ip_address'], nic_type: "82540EM"
-  end
+  # Configure all VMs
+  boxes.each_with_index do |box, index|
+    config.vm.define box[:name] do |box_config|
+      box_config.vm.hostname = box[:hostname]
+      box_config.vm.network "private_network",
+                            ip: box[:network]
+      box_config.vm.provider "virtualbox" do |v|
+        v.memory = box[:memory]
+        v.cpus = box[:cpus]
+      end
 
-  config.vm.provision "ansible" do | ansible|
-    ansible.playbook="ansible/main.yml"
-    ansible.verbose = "true"
-    ansible.extra_vars = { ansible_python_interpreter:"/usr/bin/python2" }
-    # ansible.verbose = true
-  end
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
+      # only start ansible provision after the last box
+      if index == boxes.size - 1
+        # PROVISIONING WITH ANSIBLE
+        # ------------------------------------------------------------------------
+        box_config.vm.provision "ansible" do |ansible|
+          ansible.inventory_path = "ansible/hosts.yml"
+          ansible.limit = "all"
+          ansible.playbook = "ansible/main.yml"
+          ansible.raw_arguments = ["--private-key=~/.vagrant.d/insecure_private_key"]
+        end
+      end
+     end
+   end
 end
-

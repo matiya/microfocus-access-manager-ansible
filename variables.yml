@@ -1,15 +1,20 @@
 ---
-# AC vars
+# Access Console vars
 ac_ip_address: "10.0.1.4"
 ac_fqdn: ac.lab
-ac_admin_password: Novell.123
+ac_admin_password: Password.123
 
-# IDS vars
+# Identity Server vars
 ids_ip_address: "10.0.1.5"
 ids_fqdn: ids.lab
 ids_admin_user: admin
-ids_admin_password: Novell.123
+ids_admin_password: Password.123
 
-# AG vars
+# Access Gateway vars
 ag_ip_address: "10.0.1.6"
 ag_fqdn: ag.lab
+
+# Other
+timezone: "America/Santiago"
+ac_idp_installer: "am-45-access-manager-lin64.tar.gz"
+ag_installer: "am-45-access-gw-lin64.tar.gz"
