@@ -47,7 +47,7 @@ vagrant up ag # create Access Gateway VM and provision
 # vagrant up
 # but I prefer doing it one server at the time
 #+end_src
-And the machines will be brought up. Since it has to download the whole OS, this process can take up several minutes depending on your bandwidth.
+And the machines will be brought up. Since it has to download the whole OS and the execute the installers, this process can take up several minutes depending on your bandwidth.
 
 To suspend/power off/reboot a machine:
 #+begin_src bash
@@ -63,26 +63,39 @@ vagrant reload
 vagrant provision
 #+end_src
 
+You can also separate the process in two stages. This can be useful to have more control on what's happening or to debug an issue:
+1) Bring the VMs up with vagrant:
+   #+begin_src
+vagrant up --no-provision
+   #+end_src
+2) Provision them with ansible
+   #+begin_src
+    # provision Access Console
+    ansible-playbook -i ansible/hosts.yml -l ac  ansible/main.yml
+    # provision Identity Server
+    ansible-playbook -i ansible/hosts.yml -l idp  ansible/main.yml
+    # provision Access Gateway
+    ansible-playbook -i ansible/hosts.yml -l ag  ansible/main.yml
+   #+end_src
 * Other goodies
-In the directory =ansible/aux= there are playbooks that can be executed agains running hosts, whether virtual, physical or in the cloud.
+In the directory =ansible/aux= there are playbooks that can be executed againts running hosts, whether virtual, physical or in the cloud.
 
 If the hosts are being provisioned by Vagrant use the host file =.vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory=
 
-If the hosts are elsewere, use the host file in =ansible/hosts=. Modify it according to your setup.
+If the hosts are elsewhere, use the host file =ansible/hosts.yml=. Modify it according to your setup.
 
 ** Health  check
 Check if the web consoles can be reached:
 
 #+begin_src bash
 # if using vagrant
-ansible-playbook -i  .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml ansible/aux/check_webConsoleIsUp.yml
+ansible-playbook -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml ansible/aux/check_webConsoleIsUp.yml
 # if not using vagrant
 ansible-playbook -i  ansible/hosts.yml ansible/aux/check_webConsoleIsUp.yml
 #+end_src
 ** NTP Check
 NAM can be a little finicky when it comes to time sincronization.
 #+begin_src bash
-ansible-playbook -i  .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory ansible/main.yml --tags "health-check"
 # if not using vagrant
 ansible-playbook -i  ansible/hosts.yml ansible/aux/ntp_check.yml
 # if not using
