@@ -1,8 +1,0 @@
----
-# tasks file for system.reboot
-
-- name: Rebooting the system
-  reboot:
-    test_command: "/usr/bin/systemctl novell-ac"
-    post_reboot_delay: 10
-  become: yes

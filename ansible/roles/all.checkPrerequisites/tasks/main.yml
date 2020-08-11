@@ -80,7 +80,7 @@
     # creada con este nombre
     conn_name: System eth1
     ifname: eth1
-    dns4: "{ { dns_server_address } }"
+    dns4: "{{ dns_server_address }}/16"
     type: ethernet
     state: present
   become: yes

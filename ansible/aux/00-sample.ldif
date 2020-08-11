@@ -1,0 +1,168 @@
+dn: ou=personas,dc=local
+changetype: add
+ou: personas
+description: All people in organisation
+objectclass: organizationalunit
+
+## SECOND Level hierarchy
+
+dn: ou=rrhh,ou=personas,dc=local
+changetype: add
+ou: rrhh
+description: Recursos Humanos
+objectclass: organizationalunit
+
+dn: ou=ventas,ou=personas,dc=local
+changetype: add
+ou: ventas
+description: Departamento de Ventas
+objectclass: organizationalunit
+
+
+dn: ou=desarrollo,ou=personas,dc=local
+changetype: add
+ou: desarrollo
+description: Departamento de Desarrollo
+objectclass: organizationalunit
+
+
+dn: ou=gerencia,ou=personas,dc=local
+changetype: add
+ou: gerencia
+description: Gerencia
+objectclass: organizationalunit
+
+## USERS
+
+dn: cn=Matias Siracusa,ou=desarrollo,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Matias Siracusa
+sn: Siracusa
+uid: msiracusa
+userpassword: novell.123
+homephone: 555-111-2222
+mail: msiracusa@assertiva.local
+ou: desarrollo
+title: Ejecutivo de Ventas
+st: Mendoza
+l: Mendoza
+givenName: Matias
+
+dn: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Antonia Losteau
+sn: Losteau
+uid: alosteau
+userpassword: novell.123
+homephone: 555-111-2222
+mail: alosteau@assertiva.local
+ou: gerencia
+title: Gerente General
+st: Región Metropolitana
+l: Santiago
+givenName: Antonia
+manager: cn=Matias Siracusa,ou=desarrollo,ou=personas,dc=local 
+
+dn: cn=Juan Perez,ou=ventas,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Juan Perez
+sn: Perez
+uid: jperez
+userpassword: novell.123
+homephone: 555-111-2222
+mail: jperez@assertiva.local
+ou: ventas
+title: Ejecutivo de Ventas
+st: Mendoza
+l: Mendoza
+givenName: Juan
+manager: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local 
+
+
+dn: cn=Nicolas Ivanovich,ou=gerencia,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Nicolas Ivanovich
+sn: Ivanovich
+uid: nivanovich
+userpassword: novell.123
+homephone: 555-111-2222
+mail: nivanovich@assertiva.local
+ou: gerencia
+title: Gerente Comercial
+st: Mendoza
+l: Las Vegas
+givenName: Nicolas
+manager: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local 
+
+
+dn: cn=Carla Gimenez,ou=rrhh,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Carla Gimenez
+sn: Gimenez
+uid: cgimenez
+userpassword: novell.123
+homephone: 555-111-2222
+mail: cgimenez@assertiva.local
+ou: rrhh
+title: Ejecutivo de Personas
+st: Mendoza
+l: Mendoza
+givenName: Carla
+manager: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local 
+
+
+dn: cn=Aldana Conti,ou=ventas,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Aldana Conti
+sn:  Conti
+uid: aconti
+userpassword: novell.123
+homephone: 555-111-2222
+mail: aconti@assertiva.local
+ou: ventas
+title: Ejecutivo de Ventas
+st: Río Negro
+l: Cipolletti
+givenName: Aldana
+manager: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local  
+
+
+dn: cn=Gastón Legrand,ou=rrhh,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Gastón Legrand
+sn: Legrand
+uid: glegrand
+userpassword: novell.123
+homephone: 555-111-2222
+mail: glegrand@assertiva.local
+ou: rrhh
+title: Ejecutivo de Personas
+st: San Juan
+l: Jocolí
+givenName: Gastón
+manager: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local
+
+
+dn: cn=Claudia Torrealba,ou=desarrollo,ou=personas,dc=local
+changetype: add
+objectclass: inetOrgPerson
+cn: Claudia Torrealba
+sn: Torrealba
+uid: ctorrealba
+userpassword: novell.123
+homephone: 555-111-2222
+mail: ctorrealba@assertiva.local
+ou: desarrollo
+title: Lider técnico
+st: Santa Fé
+l: Rosario
+givenName: Claudia
+manager: cn=Antonia Losteau,ou=gerencia,ou=personas,dc=local 
+
