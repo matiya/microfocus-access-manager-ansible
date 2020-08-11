@@ -5,7 +5,7 @@
   vars_files:
     - ../../variables.yml
   tasks:
-    - name: Verificar que NTP se encuentre instalador
+    - name: Verificar que NTP se encuentre instalado
       yum:
         name: ntp
     - name: Habilitar NTP y verificar que este corriendo

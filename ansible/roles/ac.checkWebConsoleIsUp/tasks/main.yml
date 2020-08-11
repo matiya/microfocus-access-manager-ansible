@@ -1,5 +1,15 @@
 ---
+- name: Verificar que tomcat esté escuchando
+  shell: netstat -tapun | grep 8443 | grep LISTEN | awk '{print $4}'
+  register: tomcat
+  become: yes
+
 - name: Comprobar accesibilidad consola web AC
+  register: url
   uri:
     url: "https://{{ac_fqdn}}:8443/nps"
     validate_certs: no
+
+- debug:
+    msg: "Tomcat ha iniciado y está escuchando en {{tomcat.stdout}} - {{url.stdout}}"
+  when: tomcat.stdout.find('8443') != -1

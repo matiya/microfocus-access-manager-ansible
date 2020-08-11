@@ -1,0 +1,43 @@
+- hosts: ac
+  become: yes
+  vars_files:
+    - ../../variables.yml
+  tasks:
+    - name: Crear organization datos
+      ldap_entry:
+        dn: o=data
+        objectClass:
+          - Organization
+          - ndsLoginProperties
+          - ndsContainerLoginProperties
+        attributes:
+          o: data
+        server_uri: "ldaps://{{ac_fqdn}}:636"
+        bind_dn: cn=admin,o=novell
+        bind_pw: "{{ac_admin_password}}"
+        validate_certs: no
+
+    - name: Crear OU usuarios
+      ldap_entry:
+        dn: ou=users,o=data
+        objectClass: organizationalUnit
+        server_uri: "ldaps://{{ac_fqdn}}:636"
+        bind_dn: cn=admin,o=novell
+        bind_pw: "{{ac_admin_password}}"
+        validate_certs: no
+
+    - name: Crear usuario pruebas
+      ldap_entry:
+        dn: "cn={{end_user_givenName}}{{end_user_sn}},ou=users,o=data"
+        objectClass:
+          - inetOrgPerson
+          - organizationalPerson
+        attributes:
+          sn: "{{end_user_sn}}"
+          givenName: "{{ end_user_givenName }}"
+          cn: "{{end_user_givenName}}{{end_user_sn}}"
+          userPassword: "{{ end_user_password }}"
+        server_uri: "ldaps://{{ac_fqdn}}:636"
+        bind_dn: cn=admin,o=novell
+        bind_pw: "{{ac_admin_password}}"
+        validate_certs: no
