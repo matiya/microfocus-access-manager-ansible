@@ -1,5 +1,5 @@
 ---
-# Tareas que son comunes a todos
+# Tareas que son comunes a todos los servidores
 - name: Habilitar repositorio EPEL
   yum:
     name: epel-release
@@ -69,7 +69,21 @@
   service: name=ntpd state=started enabled=yes
   become: yes
 
-- name: "Set timezone to {{timezone}}"
+- name: "Timezone configurado en {{timezone}}"
   timezone:
     name: "{{timezone}}"
   become: yes
+
+- name: "Configurar servidor DNS"
+  nmcli:
+    # FIXME: Depende de que la conexion haya sido
+    # creada con este nombre
+    conn_name: System eth1
+    ifname: eth1
+    dns4: "{ { dns_server_address } }"
+    type: ethernet
+    state: present
+  become: yes
+  notify:
+    - restart servicio network
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

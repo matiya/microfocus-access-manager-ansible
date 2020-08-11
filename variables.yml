@@ -18,6 +18,7 @@ ag_fqdn: ag.lab
 timezone: "America/Santiago"
 ac_idp_installer: "am-45-access-manager-lin64.tar.gz"
 ag_installer: "am-45-access-gw-lin64.tar.gz"
+dns_server_address: "10.0.1.1"
 
 # Test end user. Will be created in eDirectory in AC
 # under ou=users,o=data

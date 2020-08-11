@@ -5,6 +5,7 @@
     name:
       - bind-utils
       - python-pip
+      - python-ldap
       - rsyslog
       - rsyslog-gnutls
       - ncurses-libs
@@ -76,6 +77,3 @@
       (.*)Re-enter the password for verification(.*): "{{ac_admin_password}}"
       \[\](.*): "{{ac_ip_address}}"
       \[\d+\.\d+\.\d+.\d+\](.*): "{{ac_ip_address}}"
-
-- debug:
-    var: run_installation
