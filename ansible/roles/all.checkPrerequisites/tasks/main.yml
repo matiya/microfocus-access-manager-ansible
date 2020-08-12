@@ -5,7 +5,7 @@
     name: epel-release
     state: latest
   become: True
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Verificar que los prerequisitos comunes se encuentren instalados
   yum:
@@ -63,7 +63,7 @@
     group: root
     mode: "0644"
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Habilitar NTP y verificar que este corriendo
   service: name=ntpd state=started enabled=yes
@@ -74,16 +74,32 @@
     name: "{{timezone}}"
   become: yes
 
-- name: "Configurar servidor DNS"
-  nmcli:
-    # FIXME: Depende de que la conexion haya sido
-    # creada con este nombre
-    conn_name: System eth1
-    ifname: eth1
-    dns4: "{{ dns_server_address }}/16"
-    type: ethernet
+- name: Agregar 'dns=none' a NetworkManager.conf
+  ini_file:
+    path: /etc/NetworkManager/NetworkManager.conf
     state: present
+    no_extra_spaces: yes
+    section: main
+    option: dns
+    value: none
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify:
+    - reload servicio NetworkManager
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
+
+- name: "Configurar servidor DNS"
+  lineinfile:
+    path: /etc/resolv.conf
+    state: present
+    line: nameserver     {{dns_server_address}}
+    insertbefore: BOF
+    owner: root
+    group: root
+    mode: "0644"
   become: yes
   notify:
-    - restart servicio network
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+    - reload servicio network
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'

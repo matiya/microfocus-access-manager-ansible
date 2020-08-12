@@ -1,6 +1,11 @@
 ---
 # handlers file for rpm.versionacafterupgrade
-- name: restart servicio network
+- name: reload servicio network
   service:
     name: network
+    state: restarted
+
+- name: reload servicio NetworkManager
+  service:
+    name: NetworkManager
     state: restarted

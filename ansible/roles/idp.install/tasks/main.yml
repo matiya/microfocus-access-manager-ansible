@@ -6,7 +6,7 @@
     name: epel-release
     state: latest
   become: True
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Verificar que los prerequisitos se encuentren instalados
   yum:
@@ -61,7 +61,7 @@
     mode: "0755"
     backup: yes
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Quitar chequeo ntp - nam_rhel7_functions
   copy:
@@ -72,7 +72,7 @@
     mode: "0755"
     backup: yes
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 # debe coincidir con la IP de Vagrantfile
 - name: Agregar IP  en /etc/hosts
@@ -99,7 +99,7 @@
     group: root
     mode: "0644"
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Registrar directorio de instalación en una variable
   shell: ls -d /installer/NAM/novell-access-manager-*

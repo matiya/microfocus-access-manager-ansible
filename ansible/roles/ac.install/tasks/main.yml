@@ -42,7 +42,7 @@
     mode: "0755"
     backup: yes
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 - name: Quitar chequeo ntp - nam_rhel7_functions
   copy:
@@ -53,7 +53,7 @@
     mode: "0755"
     backup: yes
   become: yes
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'RedHat'
 
 # Para que funcione es necesario que pexpect se encuentre en el remoto
 - name: Ejecutar instalador
